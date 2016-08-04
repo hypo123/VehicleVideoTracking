@@ -1,0 +1,35 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: 单程序均值背景差 - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\fzl\AppData\Local\Temp\RSPEA93.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../../opencv1.0/cxcore/include" /I "../../opencv1.0/cv/include" /I "../../opencv1.0/otherlibs/highgui" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR"Debug/" /Fp"Debug/单程序均值背景差.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\myTest\OpenCV\目标跟踪\6单程序均值背景差\单程序均值背景差.cpp"
+]
+Creating command line "cl.exe @C:\Users\fzl\AppData\Local\Temp\RSPEA93.tmp" 
+Creating temporary file "C:\Users\fzl\AppData\Local\Temp\RSPEA94.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib cxcore.lib cv.lib ml.lib cvaux.lib highgui.lib cvcam.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/单程序均值背景差.pdb" /debug /machine:I386 /out:"Debug/单程序均值背景差.exe" /pdbtype:sept /libpath:"../../opencv1.0/lib" 
+".\Debug\Picture.obj"
+".\Debug\StdAfx.obj"
+".\Debug\单程序均值背景差.obj"
+]
+Creating command line "link.exe @C:\Users\fzl\AppData\Local\Temp\RSPEA94.tmp"
+<h3>Output Window</h3>
+Compiling...
+单程序均值背景差.cpp
+d:\mytest\opencv\目标跟踪\6单程序均值背景差\单程序均值背景差.cpp(4) : warning C4652: compiler option 'Generate Browser Info' inconsistent with precompiled header; current command-line option will override that defined in the precompiled header
+Linking...
+
+
+
+<h3>Results</h3>
+单程序均值背景差.exe - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>
