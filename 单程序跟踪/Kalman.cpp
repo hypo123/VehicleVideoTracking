@@ -6,10 +6,10 @@
 #include "Kalman.h"
 
 //////////////////////////////////////////////////////////////////////
-// Construction/Destruction
+// Construction/Destruction 
 //////////////////////////////////////////////////////////////////////
 
-//Ö¡¼äÊ±¼ä
+//å¸§é—´æ—¶é—´
 const double t = 1.0 / 15;
 
 Kalman::Kalman() : X(Mat(2,1)), A(Mat(2,2)), At(Mat(2,2)), Z(Mat(1,1)), 
@@ -66,10 +66,10 @@ void Kalman::init()
 {
 	frameCount = 1;
 
-	// MatÖĞÎ´ÉèÖÃÖµµÄ£¬ÈÏÎª¹¹ÔìÊ±ÉèÎªÁË0
+	// Matä¸­æœªè®¾ç½®å€¼çš„ï¼Œè®¤ä¸ºæ„é€ æ—¶è®¾ä¸ºäº†0
 	X[0][0] = newData;
 
-	//ÔÈ±äËÙÔË¶¯
+	//åŒ€å˜é€Ÿè¿åŠ¨
 	A[0][0] = 1;
 	A[0][1] = t;
 	A[1][1] = 1;
@@ -90,7 +90,7 @@ void Kalman::init()
 	P[1][1] = 100;
 }
 
-//X(k|k-1)=A X(k-1|k-1)+B U(k) ¡­¡­¡­.. (1)
+//X(k|k-1)=A X(k-1|k-1)+B U(k) â€¦â€¦â€¦.. (1)
 void Kalman::step1()
 {
 	Mat m = A;
@@ -121,7 +121,7 @@ void Kalman::step3()
 	X += m2;
 }
 
-//Kg(k)= P(k|k-1) H¡¯ / (H P(k|k-1) H¡¯ + R) ¡­¡­¡­ (4)
+//Kg(k)= P(k|k-1) Hâ€™ / (H P(k|k-1) Hâ€™ + R) â€¦â€¦â€¦ (4)
 void Kalman::step4()
 {
 	Mat up=P;
@@ -137,7 +137,7 @@ void Kalman::step4()
 	Kg = up;
 }
 
-//P(k|k)=£¨I-Kg(k) H£©P(k|k-1) ¡­¡­¡­ (5)
+//P(k|k)=ï¼ˆI-Kg(k) Hï¼‰P(k|k-1) â€¦â€¦â€¦ (5)
 void Kalman::step5()
 {
 	Mat m(2,2);
