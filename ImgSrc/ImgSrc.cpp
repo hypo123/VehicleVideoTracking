@@ -111,9 +111,14 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	//---------------既是服务器端又是客户端--------------
+	
 	WSADATA wsadata;
+	
+	//1.加载套接字库
 	WSAStartup(MAKEWORD(2,2), &wsadata);
 
+	//2.创建套接字
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 1)
 	{
@@ -125,12 +130,15 @@ int main(int argc, char* argv[])
 	myaddr.sin_family = AF_INET;
 	myaddr.sin_port = htons(3000);
 
+	//3.绑定到本机的一个地址和端口上
 	int n = bind(fd, (sockaddr*)&myaddr, sizeof(myaddr));
 	if (n != 0)
 	{
 		printf("bind port error\n");
 		return 3;
 	}
+	
+	//4.监听,准备接受客户端请求
 	listen(fd, n);
 
 	while (true)
@@ -140,11 +148,18 @@ int main(int argc, char* argv[])
 		sockaddr faraddr;
 		memset(&faraddr, 0, sizeof(faraddr));
 		int addrlen = sizeof(faraddr);
+		
+		//5.等待客户端请求到来,当请求到来后,接受连接请求,
+		//返回一个新的对应此连接的套接字
 		newfd = accept(fd, (sockaddr*)&faraddr, &addrlen);
+		
 		if (newfd < 1)
 		{
 			printf("accept error\n");
+			
+			//关闭套接字
 			closesocket(fd);
+			
 			return 0;
 		}
 		printf("got new client\n");
@@ -162,7 +177,7 @@ int main(int argc, char* argv[])
 					return 2;
 				}
 				
-				//��֡����
+				//Ê×Ö¡¶ªÆú
 				cvQueryFrame(capture);
 			}
 			else
