@@ -1,5 +1,6 @@
 // ImgSrc.cpp : Defines the entry point for the console application.
 //
+//Windows下Socket编程参见:http://www.360doc.com/content/14/0318/15/15257968_361585987.shtml
 
 #include "stdafx.h"
 #include <string.h>
