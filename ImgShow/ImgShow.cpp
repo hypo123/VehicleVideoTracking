@@ -26,22 +26,32 @@ struct HEAD
 #pragma pack()
 int main(int argc, char* argv[])
 {
+	//---------------------服务器端-----------------------
+	
 	WSADATA wsadata;
+	
+	//WSA(Windows Sockets Asynchronous，Windows异步套接字)的启动命令
 	WSAStartup(MAKEWORD(2,2), &wsadata);
 
+	//创建套接字
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
+	
 	sockaddr_in myaddr;
 	myaddr.sin_addr.s_addr = INADDR_ANY;
 	myaddr.sin_family = AF_INET;
 	myaddr.sin_port = htons(3001);
 
+	//绑定到本机地址和端口上
 	int e = bind(fd, (sockaddr*)&myaddr, sizeof(myaddr));
+	
 	if (e < 0)
 	{
 		printf("bind port 3001 error\n");
 		closesocket(fd);
 		return 1;
 	}
+	
+	//监听,准备接受客户端请求
 	listen(fd, 5);
 
 	printf("recv data for show\n");
