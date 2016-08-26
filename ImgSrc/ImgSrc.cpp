@@ -13,6 +13,7 @@
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
+//结构体内变量4字节对齐
 #pragma pack(4)
 struct HEAD
 {
@@ -120,26 +121,30 @@ int main(int argc, char* argv[])
 	WSAStartup(MAKEWORD(2,2), &wsadata);
 
 	//2.创建套接字
+	//创建成功则返回新创建的套接字的描述符,套接字描述符是一个整数类型的值
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 1)
 	{
 		printf("socket error\n");
 		return 4;
 	}
-	sockaddr_in myaddr;
-	myaddr.sin_addr.s_addr = INADDR_ANY;
-	myaddr.sin_family = AF_INET;
-	myaddr.sin_port = htons(3000);
+	
+	sockaddr_in myaddr;//地址结构体
+	myaddr.sin_addr.s_addr = INADDR_ANY;//指定ip地址
+	myaddr.sin_family = AF_INET;//指定地址簇为TCP/IP协议
+	myaddr.sin_port = htons(3000);//指明端口号
 
 	//3.绑定到本机的一个地址和端口上
 	int n = bind(fd, (sockaddr*)&myaddr, sizeof(myaddr));
+	//绑定是否成功
 	if (n != 0)
 	{
 		printf("bind port error\n");
 		return 3;
 	}
 	
-	//4.监听,准备接受客户端请求
+	//4.使流套接字fd处于监听状态,处于监听状态的流套接字s将维护一个客户连接请求队列,该队列最多容纳backlog个客户连接请求.
+	//假如该函数执行成功，则返回0；如果执行失败，则返回SOCKET_ERROR
 	listen(fd, n);
 
 	while (true)
@@ -150,10 +155,16 @@ int main(int argc, char* argv[])
 		memset(&faraddr, 0, sizeof(faraddr));
 		int addrlen = sizeof(faraddr);
 		
-		//5.等待客户端请求到来,当请求到来后,接受连接请求,
-		//返回一个新的对应此连接的套接字
+		//5.等待客户端请求到来,当请求到来后,接受连接请求,返回一个新的对应此连接的套接字
+		//accept默认是阻塞方式监听端口连接的，如果没有连接，就会一直阻塞在这里;
+		//服务程序调用accept函数从处于监听状态的流套接字fd的客户连接请求队列中取出排在最前的一个客户请求,
+		//并且创建一个新的套接字来与客户套接字创建连接通道;
+		//
+		//如果连接成功，就返回新创建的套接字的描述符，以后与客户套接字交换数据的是新创建的套接字;
+		//如果失败就返回INVALID_SOCKET
 		newfd = accept(fd, (sockaddr*)&faraddr, &addrlen);
 		
+		//判断新accept函数创建的套接字是否成功
 		if (newfd < 1)
 		{
 			printf("accept error\n");
@@ -167,29 +178,37 @@ int main(int argc, char* argv[])
 	
 		if (true)
 		{
-			CvCapture* capture = NULL;
-			std::list<char*>::iterator it;
+			CvCapture* capture = NULL;//CvCapture用来保存图像捕获的信息
+			
+			std::list<char*>::iterator it;//双向链表的迭代器it
+			
+			//判断视频格式是否是avi
 			if (isAvi)
 			{
+				//从.avi文件中读取视频,并返回CvCapture结构指针
 				capture = cvCaptureFromFile(argv[1]);
+				
 				if (NULL == capture)
 				{
 					printf("capture from avi file error\n");
 					return 2;
 				}
 				
-				//Ê×Ö¡¶ªÆú
+				//从文件中获取一帧
 				cvQueryFrame(capture);
 			}
 			else
 			{
 				it = jpgNames.begin();
 			}
+			
 			while (true)
 			{
 				IplImage *img = NULL;
+				
 				if (isAvi)
 				{
+					//从文件中获取一帧,并将信息存储在IplImage中
 					img = cvQueryFrame(capture);
 				}
 				else
@@ -198,28 +217,49 @@ int main(int argc, char* argv[])
 					{
 						break;
 					}
+					
 					img = cvLoadImage(*it);
 					++it;
 				}
+				
 				if (NULL == img)
 				{
 					break;
 				}
+				
 				HEAD h;
+				
+				//htonl函数,将主机的无符号长整形数转换成网络字节顺序
 				h.headlen = htonl(sizeof(HEAD));
 				h.taillen = htonl(img->widthStep * img->height);
 				h.h = htonl(img->height);
 				h.w = htonl(img->width);
-
-				char recvbuf[10];
+		
+				char recvbuf[10];//接受端缓冲区
+				
+				//不论是客户还是服务器应用程序都用recv函数从TCP连接的另一端接收数据
+				//参数1-newfd指定接收端套接字描述符
+				//参数2-recvbuf指明一个缓冲区,该缓冲区用来存放recv函数接收的数据
+				//参数3-指明recvbuf的长度
+				//参数4-一般置0
 				int e = recv(newfd, recvbuf, 1, 0);
+				
+				//recv函数接收数据是否出错
 				if (e != 1)
 				{
 					shutdown(newfd, 2);
 					closesocket(newfd);
 					break;
 				}
+				
+				//不论是客户还是服务器应用程序都用send函数来向TCP连接的另一端发送数据
+				//客户程序一般用send函数向服务器发送请求，而服务器则通常用send函数来向客户程序发送应答
+				//参数1-指定发送端套接字描述符
+				//参数2-指明一个存放应用程序要发送数据的缓冲区
+				//参数3-指明实际要发送的数据的字节数
+				//参数4-一般置0
 				send(newfd, (char*)&h, sizeof(h), 0);
+				
 				if (0 == img->origin)
 				{
 					send(newfd, img->imageData, img->height * img->widthStep, 0);
@@ -231,6 +271,7 @@ int main(int argc, char* argv[])
 						send(newfd, img->imageData + i*img->widthStep, img->widthStep, 0);
 					}
 				}
+				
 				if (isAvi)
 				{
 				}
@@ -240,6 +281,8 @@ int main(int argc, char* argv[])
 					img = NULL;
 				}
 			}
+			
+			//关闭套接字
 			closesocket(newfd);
 			newfd = 0;
 		}
