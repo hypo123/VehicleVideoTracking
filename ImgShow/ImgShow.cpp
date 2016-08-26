@@ -24,6 +24,7 @@ struct HEAD
 	long taillen;
 };
 #pragma pack()
+
 int main(int argc, char* argv[])
 {
 	//---------------------服务器端-----------------------
@@ -57,12 +58,16 @@ int main(int argc, char* argv[])
 	printf("recv data for show\n");
 
 	cvWaitKey(1);
+	
 	while (true)
 	{
 		printf("wait for connecting\n");
+		
 		sockaddr_in faraddr;
 		int size = sizeof(faraddr);
+		
 		int newfd = accept(fd, (sockaddr*)&faraddr, &size);
+		
 		if (newfd < 1)
 		{
 			printf("accept error %d\n", GetLastError());
@@ -73,13 +78,17 @@ int main(int argc, char* argv[])
 
 		IplImage* imgs[10] = {0};
 		bool windows[10] = {false};
+		
 		while (true)
 		{
 			bool hasError = false;
+			
 			HEAD head;
+			
 			for (int i=0; i<4; ++i)
 			{
 				int n = recv(newfd, ((char*)&head)+i, 1, 0);
+				
 				if (n != 1)
 				{
 					hasError = true;
@@ -87,11 +96,14 @@ int main(int argc, char* argv[])
 					break;
 				}
 			}
+			
 			if (hasError)
 			{
 				break;
 			}
+			
 			head.headlen = ntohl(head.headlen);
+			
 			if (head.headlen > 1024 || head.headlen < 8)
 			{
 				printf("head.headlen error %d\n", head.headlen);
@@ -112,10 +124,12 @@ int main(int argc, char* argv[])
 			{
 				break;
 			}
+			
 			head.h = ntohl(head.h);
 			head.id = ntohl(head.id);
 			head.w = ntohl(head.w);
 			head.taillen = ntohl(head.taillen);
+			
 			if (head.taillen > 10*1024*1024 && head.taillen < 1)
 			{
 				printf("head.taillen error %d\n", head.taillen);
@@ -134,15 +148,19 @@ int main(int argc, char* argv[])
 			}
 				
 			IplImage* img = imgs[head.id];
+			
 			int nChannels = (head.taillen / head.w / head.h) >= 3 ? 3 : 1;
+			
 			bool needCreate = false;
 			needCreate = (NULL == img);
+			
 			if (!needCreate && (img->height != head.h || img->width != head.w || img->nChannels != nChannels))
 			{
 				needCreate = true;
 				cvReleaseImage(&(imgs[head.id]));
 				imgs[head.id] = img = NULL;
 			}
+			
 			if (needCreate)
 			{
 				imgs[head.id] = img = cvCreateImage(cvSize(head.w, head.h), IPL_DEPTH_8U, nChannels);
@@ -171,14 +189,20 @@ int main(int argc, char* argv[])
 			}
 
 			char windowName[10] = {0};
+			
 			windowName[0] = '0' + head.id;
+			
 			if (!windows[head.id])
 			{
 				windows[head.id] = true;
+				
+				//创建窗口用来显示图像
 				cvNamedWindow(windowName);
 			}
-
+			
+			//在指定窗口中显示图像 参数1-窗口的名字 参数2-被显示的图像
 			cvShowImage(windowName, img);
+			
 			cvWaitKey(1);
 		}
 		shutdown(newfd, 2);
