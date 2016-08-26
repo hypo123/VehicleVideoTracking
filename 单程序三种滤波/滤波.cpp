@@ -7,6 +7,7 @@
 #include <math.h>
 #pragma comment(lib, "ws2_32.lib")
 
+//ç»“æ„ä½“ä¸­å˜é‡4å­—èŠ‚å¯¹é½
 #pragma pack(4)
 struct HEAD
 {
@@ -28,15 +29,15 @@ struct HEAD2
 };
 #pragma pack()
 
-unsigned char rgb[10*1024*1024] = {0}; //Ô­Í¼
+unsigned char rgb[10*1024*1024] = {0}; //åŸå›¾
 
-unsigned int bg[10*1024*1024] = {0}; //»Ò¶È±³¾°
-unsigned char bgshow[10*1024*1024] = {0}; //±³¾°ÏÔÊ¾
+unsigned int bg[10*1024*1024] = {0}; //ç°åº¦èƒŒæ™¯
+unsigned char bgshow[10*1024*1024] = {0}; //èƒŒæ™¯æ˜¾ç¤º
 
-unsigned char gray[10*1024*1024] = {0}; //»Ò¶È
-unsigned char gray2[10*1024*1024] = {0}; //¾ùÖµÂË²¨
-unsigned char gray3[10*1024*1024] = {0}; //ÖĞÖµÂË²¨
-unsigned char gray4[10*1024*1024] = {0}; //¸ßË¹ÂË²¨
+unsigned char gray[10*1024*1024] = {0}; //ç°åº¦
+unsigned char gray2[10*1024*1024] = {0}; //å‡å€¼æ»¤æ³¢
+unsigned char gray3[10*1024*1024] = {0}; //ä¸­å€¼æ»¤æ³¢
+unsigned char gray4[10*1024*1024] = {0}; //é«˜æ–¯æ»¤æ³¢
 
 double param = 0;
 void td(void*)
@@ -60,12 +61,15 @@ void td(void*)
 
 int main(int argc, char* argv[])
 {
+	//åˆ›å»ºä¸€ä¸ªæ–°çº¿ç¨‹
 	_beginthread(td, 100*1024, 0);
+	
 	WSADATA wsadata;
 	WSAStartup(MAKEWORD(2,2), &wsadata);
 	
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	int fd2 = socket(AF_INET, SOCK_STREAM, 0);
+	
 	if (true)
 	{
 		if (fd < 1 || fd2 < 1)
@@ -79,10 +83,12 @@ int main(int argc, char* argv[])
 		faraddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		faraddr.sin_family = AF_INET;
 		faraddr.sin_port = htons(3000);
+		
 		sockaddr_in faraddr2;
 		faraddr2.sin_addr.s_addr = inet_addr("127.0.0.1");
 		faraddr2.sin_family = AF_INET;
 		faraddr2.sin_port = htons(3001);
+		
 		if (2 == argc)
 		{
 			unsigned long l = inet_addr(argv[1]);
@@ -125,7 +131,7 @@ int main(int argc, char* argv[])
 	
 	HEAD head;
 
-	printf("0ºÅ´°¿Ú²ÊÍ¼£¬1ºÅ»Ò¶ÈÍ¼£¬2ºÅ¾ùÖµÂË²¨£¬3ºÅÖĞÖµÂË²¨£¬4ºÅ¸ßË¹ÂË²¨\n");
+	printf("0å·çª—å£å½©å›¾ï¼Œ1å·ç°åº¦å›¾ï¼Œ2å·å‡å€¼æ»¤æ³¢ï¼Œ3å·ä¸­å€¼æ»¤æ³¢ï¼Œ4å·é«˜æ–¯æ»¤æ³¢\n");
 
 	int recvlen = 0;
 	while (true)
@@ -176,13 +182,13 @@ int main(int argc, char* argv[])
 		const int WS_OLD = (head.w * 3 + 3) ^ 0x03;
 		const int WS_NEW = (head.w + 3) ^ 0x03;
 
-		//Æô¶¯¸ß¸üĞÂÂÊ£¬Öğ²½½µµÍµ½×îµÍÖµ¡£
+		//å¯åŠ¨é«˜æ›´æ–°ç‡ï¼Œé€æ­¥é™ä½åˆ°æœ€ä½å€¼ã€‚
 		static int u2 = 300;
 		if (u2 > 10)
 			--u2;
 		int update = u2 / 10;
 
-		//rgb×ªgray
+		//rgbè½¬gray
 		for (i=2; i<head.h-2; ++i)
 		{
 			unsigned char *prgb = rgb + i * WS_OLD;
@@ -201,7 +207,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		//ÂË²¨
+		//æ»¤æ³¢
 		for (i=2; i<head.h-2; ++i)
 		{
 			unsigned char *pgraya = gray + i*WS_NEW;
@@ -214,7 +220,7 @@ int main(int argc, char* argv[])
 
 			for (int j=2; j<head.w-2; ++j)
 			{
-				//¾ùÖµÂË²¨
+				//å‡å€¼æ»¤æ³¢
 				unsigned int n = 4 + 
 				pgraya[j-1] + 
 				pgraya[j-0] + 
@@ -227,7 +233,7 @@ int main(int argc, char* argv[])
 				pgrayc[j+1] ;
 				pgray2[j] = n / 8;
 
-				//ÖĞÖµÂË²¨
+				//ä¸­å€¼æ»¤æ³¢
 				int a[9] = {
 				pgraya[j-1] ,
 				pgraya[j-0] , 
@@ -253,7 +259,7 @@ int main(int argc, char* argv[])
 				}
 				pgray3[j] = a[4];
 
-				//¸ßË¹ÂË²¨
+				//é«˜æ–¯æ»¤æ³¢
 				n = 8 + 
 				pgraya[j-1] + 
 				pgraya[j-0]*2 + 
@@ -270,7 +276,7 @@ int main(int argc, char* argv[])
 
 
 		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		//²ÊÍ¼
+		//å½©å›¾
 		if (true){
 			HEAD2 head2;
 			head2.headlen = htonl(sizeof(HEAD2));
@@ -282,7 +288,7 @@ int main(int argc, char* argv[])
 			send(fd2, (char*)rgb, head.taillen, 0);
 		}
 
-		//»Ò¶ÈÍ¼
+		//ç°åº¦å›¾
 		if (true)
 		{
 			HEAD2 head2;
@@ -295,7 +301,7 @@ int main(int argc, char* argv[])
 			send(fd2, (char*)gray, ntohl(head2.taillen), 0);
 		}
 
-		//¾ùÖµÂË²¨
+		//å‡å€¼æ»¤æ³¢
 		if (true)
 		{
 			HEAD2 head2;
@@ -308,7 +314,7 @@ int main(int argc, char* argv[])
 			send(fd2, (char*)gray2, ntohl(head2.taillen), 0);
 		}
 
-		//ÖĞÖµÂË²¨
+		//ä¸­å€¼æ»¤æ³¢
 		if (true)
 		{
 			HEAD2 head2;
@@ -321,7 +327,7 @@ int main(int argc, char* argv[])
 			send(fd2, (char*)gray3, ntohl(head2.taillen), 0);
 		}
 
-		//¸ßË¹ÂË²¨
+		//é«˜æ–¯æ»¤æ³¢
 		if (true)
 		{
 			HEAD2 head2;
@@ -334,7 +340,7 @@ int main(int argc, char* argv[])
 			send(fd2, (char*)gray4, ntohl(head2.taillen), 0);
 		}
  
-		//·åÖµĞÅÔë±È ¾ùÖµ ÖĞÖµ ¸ßË¹
+		//å³°å€¼ä¿¡å™ªæ¯” å‡å€¼ ä¸­å€¼ é«˜æ–¯
 		long mse2 = 0;
 		long mse3 = 0;
 		long mse4 = 0;
@@ -375,7 +381,7 @@ int main(int argc, char* argv[])
 			if (aa == 311)
 				aa = 311;
 			if (aa == 300)
-				printf("¾ùÖµÂË²¨   ÖĞÖµÂË²¨   ¸ßË¹ÂË²¨\n");
+				printf("å‡å€¼æ»¤æ³¢   ä¸­å€¼æ»¤æ³¢   é«˜æ–¯æ»¤æ³¢\n");
 			if (aa >= 300 && aa <310)
 				printf("%10f %10f %10f\n", psnr2, psnr3, psnr4);
 		}
