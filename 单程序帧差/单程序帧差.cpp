@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 	IplImage *pRgb = cvQueryFrame(capture);
 
 	//初始化各图像尺寸
+	//cvCreateImage函数 参数1-结构体cvSize表示图像宽和高 参数2-图像元素的位深度 参数3-每个元素(像素)通道数
 	IplImage *pGray = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//灰度图
 	IplImage *pLast = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//上一帧灰度图
 	IplImage *pDif = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//帧差
