@@ -1,4 +1,4 @@
-// µ¥³ÌÐòÖ¡²î.cpp : Defines the entry point for the console application.
+// å•ç¨‹åºå¸§å·®.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
@@ -13,8 +13,8 @@ void Multi(IplImage* pDif, unsigned int n);
 
 int main(int argc, char* argv[])
 {
-	Picture * dif5 = NULL;//Ö¡²î5±¶·Å´óÍ¼
-	Picture * difBin = NULL;//Ö¡²î¶þÖµ»¯Í¼
+	Picture * dif5 = NULL;//å¸§å·®5å€æ”¾å¤§å›¾
+	Picture * difBin = NULL;//å¸§å·®äºŒå€¼åŒ–å›¾
 
 	if (argc!=2) return 0;
 
@@ -23,47 +23,49 @@ int main(int argc, char* argv[])
 	CvCapture* capture = cvCaptureFromFile(fileName);
 	IplImage *pRgb = cvQueryFrame(capture);
 
-	//³õÊ¼»¯¸÷Í¼Ïñ³ß´ç
-	IplImage *pGray = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//»Ò¶ÈÍ¼
-	IplImage *pLast = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//ÉÏÒ»Ö¡»Ò¶ÈÍ¼
-	IplImage *pDif = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//Ö¡²î
-	IplImage *pDif5 = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//Ö¡²î5±¶
-	IplImage *pDifBin = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//Ö¡²î¶þÖµ»¯
+	//åˆå§‹åŒ–å„å›¾åƒå°ºå¯¸
+	IplImage *pGray = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//ç°åº¦å›¾
+	IplImage *pLast = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//ä¸Šä¸€å¸§ç°åº¦å›¾
+	IplImage *pDif = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//å¸§å·®
+	IplImage *pDif5 = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//å¸§å·®5å€
+	IplImage *pDifBin = cvCreateImage(cvSize(pRgb->width, pRgb->height), IPL_DEPTH_8U, 1);//å¸§å·®äºŒå€¼åŒ–
+	
+	//int originä¸ºIplImageç»“æž„çš„å˜é‡è¡¨ç¤ºå›¾åƒåŽŸç‚¹ä½ç½®
 	pGray->origin = 
 	pLast->origin = 
 	pDif->origin = 
 	pDif5->origin = 
 	pDifBin->origin = pRgb->origin;
 
-	//´´½¨ÏÔÊ¾´°¿Ú
+	//åˆ›å»ºæ˜¾ç¤ºçª—å£
 	cvNamedWindow("rgb");
 	cvNamedWindow("gray");
 	cvNamedWindow("last");
 	cvNamedWindow("dif");
 	cvNamedWindow("dif5");
 
-	//Ñ­»·¶ÁÖ¡´¦Àí
+	//å¾ªçŽ¯è¯»å¸§å¤„ç†
 	while ((pRgb = cvQueryFrame(capture)) != NULL)
 	{
 		cvShowImage("rgb",pRgb);
 
-		//»Ò¶È
+		//ç°åº¦
 		Rgb2Gray(pGray, pRgb);
 		cvShowImage("gray", pGray);
 
-		//ÉÏÒ»Ö¡
+		//ä¸Šä¸€å¸§
 		cvShowImage("last", pLast);
 
-		//Ö¡²î
+		//å¸§å·®
 		GrayDif(pDif, pGray, pLast);
 		cvShowImage("dif", pDif);
 
-		//Ö¡²î5±¶
+		//å¸§å·®5å€
 		memcpy(pDif5->imageData, pDif->imageData, pGray->widthStep * pGray->height);
 		::Multi(pDif5, 5);
 		cvShowImage("dif5", pDif5);
 
-		//ÉèÖÃÉÏÒ»Ö¡
+		//è®¾ç½®ä¸Šä¸€å¸§
 		memcpy(pLast->imageData, pGray->imageData, pGray->widthStep * pGray->height);
 		cvWaitKey(100);
 	}
@@ -71,6 +73,7 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+//RGBå›¾è½¬ç°åº¦å›¾
 void Rgb2Gray(IplImage* gray, const IplImage* rgb)
 {
 	Picture* picRgb = new Picture(rgb->width, rgb->height, 3);
@@ -89,6 +92,8 @@ void Rgb2Gray(IplImage* gray, const IplImage* rgb)
 	delete picRgb;
 	picRgb = NULL;
 }
+
+//ä¸¤å¹…ç°åº¦å›¾çš„å·®
 void GrayDif(IplImage* pDif, const IplImage* pImg1, const IplImage* pImg2)
 {
 	Picture* picGray1= new Picture(pImg1->width, pImg1->height, 1);
@@ -111,6 +116,8 @@ void GrayDif(IplImage* pDif, const IplImage* pImg1, const IplImage* pImg2)
 	delete picGray1;
 	picGray1 = NULL;
 }
+
+//æ”¾å¤§
 void Multi(IplImage* pDif, unsigned int n)
 {
 	int count = pDif->widthStep * pDif->height;
