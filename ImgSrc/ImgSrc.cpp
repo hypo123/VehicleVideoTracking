@@ -46,6 +46,7 @@ int main(int argc, char* argv[])
 	}
 
 	std::list<char*> jpgNames;
+	
 	if (!isAvi)
 	{
 		char path1[260]={0};
