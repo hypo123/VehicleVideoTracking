@@ -107,7 +107,7 @@ void Rgb2Gray(IplImage* gray, const IplImage* rgb)
 	picRgb = NULL;
 }
 
-//两幅灰度图的差
+//两幅灰度图的帧差
 void GrayDif(IplImage* pDif, const IplImage* pImg1, const IplImage* pImg2)
 {
 	Picture* picGray1= new Picture(pImg1->width, pImg1->height, 1);
@@ -163,6 +163,7 @@ void CaclBackground(IplImage* pBackground, const IplImage* pGrayFrame)
 	picBg = NULL;
 }
 
+//帧差图像二值化
 void Gray2Bin(IplImage* pBin, const IplImage* pGray)
 {
 	Picture* pPicBin = new Picture(pGray->width, pGray->height, 1);
