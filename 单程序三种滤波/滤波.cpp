@@ -67,7 +67,9 @@ int main(int argc, char* argv[])
 	WSADATA wsadata;
 	WSAStartup(MAKEWORD(2,2), &wsadata);
 	
+	//创建Socket,返回socket描述符fd
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
+	//创建Socket,返回socket描述符fd2
 	int fd2 = socket(AF_INET, SOCK_STREAM, 0);
 	
 	if (true)
@@ -80,14 +82,14 @@ int main(int argc, char* argv[])
 		}
 		
 		sockaddr_in faraddr;
-		faraddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+		faraddr.sin_addr.s_addr = inet_addr("127.0.0.1");//设置ip地址
 		faraddr.sin_family = AF_INET;
-		faraddr.sin_port = htons(3000);
+		faraddr.sin_port = htons(3000);//设置端口为3000
 		
 		sockaddr_in faraddr2;
-		faraddr2.sin_addr.s_addr = inet_addr("127.0.0.1");
+		faraddr2.sin_addr.s_addr = inet_addr("127.0.0.1");//设置ip地址
 		faraddr2.sin_family = AF_INET;
-		faraddr2.sin_port = htons(3001);
+		faraddr2.sin_port = htons(3001);//设置端口为3001
 		
 		if (2 == argc)
 		{
@@ -108,7 +110,11 @@ int main(int argc, char* argv[])
 			printf("connecting 127.0.0.1:3000\n");
 		}
 		
+		//客户程序调用connect函数来使客户Socket fd与监听于faraddr所指定的计算机的特定端口上的服务Socket进行连接.
+		//如果连接成功,connect返回0;如果失败则返回SOCKET_ERROR
 		int e = connect(fd, (sockaddr*)&faraddr, sizeof(faraddr));
+		
+		//connect是否成功
 		if (e < 0)
 		{
 			printf("connect failed\n");
@@ -118,6 +124,7 @@ int main(int argc, char* argv[])
 		printf("connected\n");
 
 		printf("connecting port 3001\n");
+		//客户端Socket fd2与监听与faraddr2所指定的计算机的特点端口上的服务Socket进行连接.
 		e = connect(fd2, (sockaddr*)&faraddr2, sizeof(faraddr2));
 		if (e < 0)
 		{
@@ -136,11 +143,25 @@ int main(int argc, char* argv[])
 	int recvlen = 0;
 	while (true)
 	{
+		//向TCP连接的另一端发送数据
+		//参数1-指定发送端套接字描述
+		//参数2-指明一个存放应用程序要发送数据的缓冲区
+		//参数3-指明实际要发送的数据的字节数
+		//参数4-一般置0
 		send(fd, "a", 1, 0);
+		
 		for (int i=0; i<4; ++i)
 		{
+			//从TCP连接的另一端接收数据
+			//参数1-newfd指定接收端套接字描述符
+			//参数2-recvbuf指明一个缓冲区,该缓冲区用来存放recv函数接收的数据
+			//参数3-指明recvbuf的长度
+			//参数4-一般置0
 			int e = recv(fd, ((char*)&head)+i, 1, 0);
-			if (e != 1){
+			
+			//判断接收是否成功
+			if (e != 1)
+			{
 				printf("recv error\n");
 				closesocket(fd);
 				return 0;
