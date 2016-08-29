@@ -47,6 +47,7 @@ PicWhiteBlock* Pic::addNewBlock()
 	return p;
 }
 
+//è†¨èƒ€
 void Pic::inflate()
 {
 	::memset(line[0], 0, ws);
@@ -78,7 +79,7 @@ void Pic::inflate()
 				line[i  ][j  ] |= 255;
 				break;
 			default:
-				//±ØĞë255ÎªÇ°¾°,  ÆäËûÎª0
+				//å¿…é¡»255ä¸ºå‰æ™¯,  å…¶ä»–ä¸º0
 				assert(false);
 				break;
 			}
@@ -86,6 +87,7 @@ void Pic::inflate()
 	}
 }
 
+//è…èš€
 void Pic::corrode()
 {
 	::memset(line[0], 0, ws);
@@ -113,8 +115,8 @@ void Pic::corrode()
 					line[i+1][j  ] == 0 ||
 					line[i+1][j+1] == 0 )
 				{
-					//Ó¦¸Ã¸¯Ê´¡£
-					//ºó·½ÓĞ°×µãÒªÊ¹ÓÃ±¾µãĞÅÏ¢Ê±£¬Ğè±£Áô±¾µã Ô­±¾°×É« ĞÅÏ¢
+					//åº”è¯¥è…èš€ã€‚
+					//åæ–¹æœ‰ç™½ç‚¹è¦ä½¿ç”¨æœ¬ç‚¹ä¿¡æ¯æ—¶ï¼Œéœ€ä¿ç•™æœ¬ç‚¹ åŸæœ¬ç™½è‰² ä¿¡æ¯
 					if (line[i  ][j+1] == 255 || 
 						line[i+1][j-1] == 255 || 
 						line[i+1][j  ] == 255 || 
@@ -125,7 +127,7 @@ void Pic::corrode()
 						line[i][j] = 0;
 				}
 
-				//Çå³ıÇ°·½µÄ Ô­±¾°×É« ĞÅÏ¢,Èç¹û²»ÔÙÊ¹ÓÃÁË.
+				//æ¸…é™¤å‰æ–¹çš„ åŸæœ¬ç™½è‰² ä¿¡æ¯,å¦‚æœä¸å†ä½¿ç”¨äº†.
 				if (line[i-1][j-1] == 1)
 					line[i-1][j-1] = 0;
 				if (line[i-1][j  ] == 1 && line[i  ][j+1] == 0)
@@ -145,9 +147,10 @@ void Pic::corrode()
 
 
 
+//ç©ºæ´å¡«å……
 void Pic::fillhole()
 {
-	//È«Í¼É¨ÃèÒ»±é£¬ÔÙ¼Ó±ßÔµ¼°ÆäÏàÁÚÉ¨Ãè£¬
+	//å…¨å›¾æ‰«æä¸€éï¼Œå†åŠ è¾¹ç¼˜åŠå…¶ç›¸é‚»æ‰«æï¼Œ
 	::memset(line[0], 0, ws);
 	::memset(line[h-1], 0, ws);
 	for (int i=1; i<h-1; ++i)
@@ -158,7 +161,7 @@ void Pic::fillhole()
 
 	clearBlocks();
 
-	//¿Õ´¦0£¬ÎïÌå255
+	//ç©ºå¤„0ï¼Œç‰©ä½“255
 
 	bool inArea = false;
 	for (i=1; i<h-1; ++i)
@@ -173,10 +176,10 @@ void Pic::fillhole()
 				{
 					PicWhiteBlock* pBlock = this->addNewBlock();
 
-					//É¨ÃèÂÖÀª¡£ ÆğÊ¼µã£¬ÒÔ×ó²à¿ªÊ¼£¬Ë³Ê±Õë¡£ÉÏÏÂ²àµÄ±ßÔµ±ê¼Ç£¬²»»áÊ¹ÓÃµ½¡£
+					//æ‰«æè½®å»“ã€‚ èµ·å§‹ç‚¹ï¼Œä»¥å·¦ä¾§å¼€å§‹ï¼Œé¡ºæ—¶é’ˆã€‚ä¸Šä¸‹ä¾§çš„è¾¹ç¼˜æ ‡è®°ï¼Œä¸ä¼šä½¿ç”¨åˆ°ã€‚
 					const char up=1, right=2,down=4,left=8;
-					short posRow=i, posCol=j;//µ±Ç°ÏñËØ
-					char edge = left;	//µ±Ç°±ßÔµÔÚµ±Ç°ÏñËØ×ó±ßÔµ
+					short posRow=i, posCol=j;//å½“å‰åƒç´ 
+					char edge = left;	//å½“å‰è¾¹ç¼˜åœ¨å½“å‰åƒç´ å·¦è¾¹ç¼˜
 					while (true)
 					{
 						pBlock->addPix(posRow, posCol);
@@ -233,9 +236,9 @@ void Pic::fillhole()
 								edge = right;
 							}else
 							{
-								//µ¥¸öÏñËØ
+								//å•ä¸ªåƒç´ 
 								line[posRow][posCol] &= ((~right) & (~left));
-								edge = left; //»Øµ½Æğµã
+								edge = left; //å›åˆ°èµ·ç‚¹
 							}
 							break;
 						case up:
@@ -386,7 +389,7 @@ void Pic::fillhole()
 							switch(edge)
 							{
 							case left:
-								//½áÊø
+								//ç»“æŸ
 								break;
 							case up:
 							case right:
@@ -410,7 +413,7 @@ void Pic::fillhole()
 						}
 					}
 
-					//´¦Àíµ±Ç°ÏñËØ
+					//å¤„ç†å½“å‰åƒç´ 
 					if (line[i][j] == (255&(~left)))
 					{
 						inArea = true;
@@ -434,7 +437,7 @@ void Pic::fillhole()
 			}
 			else
 			{
-				// ÉÏ1 ÓÒ2 ÏÂ4 ×ó8
+				// ä¸Š1 å³2 ä¸‹4 å·¦8
 				switch(line[i][j])
 				{
 				case 0:
@@ -454,6 +457,7 @@ void Pic::fillhole()
 	}
 }
 
+//ä¸­å€¼æ»¤æ³¢
 void Pic::midvaluefilter()
 {
 	::memset(line[0], 0, ws);
